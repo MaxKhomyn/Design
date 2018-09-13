@@ -1,0 +1,159 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Converters="clr-namespace:Design.Converters"
+                    xmlns:Controls="clr-namespace:Design.Controls">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Design;component/Styles/Window.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    
+    <Converters:AddValueConverter x:Key="addValueConverter"/>
+    <Converters:BrushTranslationConverter x:Key="brushTranslationConverter"/>
+    
+    <Style TargetType="{x:Type Controls:AcrylicWindow}" BasedOn="{StaticResource AcrylicWindowStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Window}" >
+                    <Border x:Name="windowBorder"
+                            BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=BorderBrush}"
+                            BorderThickness="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path= BorderThickness}"
+                            Background="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Background}">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource Self}}" Value="False">
+                            <Setter TargetName="windowBorder" Property="Border.BorderBrush" Value="Gray" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Self}}" Value="Maximized">
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="ResizeMode" Value="CanResizeWithGrip"/>
+                    <Condition Property="WindowState" Value="Normal"/>
+                </MultiTrigger.Conditions>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Window}" >
+                            <Border x:Name="windowBorder"
+                                    BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=BorderBrush}"
+                                    BorderThickness="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path= BorderThickness}"
+                                    Background="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Background}">
+                                <Grid>
+                                    <ContentPresenter />
+                                    <ResizeGrip HorizontalAlignment="Right" IsTabStop="False" VerticalAlignment="Bottom"/>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource Self}}" Value="False">
+                                    <Setter TargetName="windowBorder" Property="Border.BorderBrush" Value="Gray" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource Self}}" Value="Maximized">
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </MultiTrigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style TargetType="{x:Type Controls:ParallaxView}">
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:ParallaxView}">
+                    <ContentPresenter Margin="{TemplateBinding OffsetMargin}">
+                        <ContentPresenter.Height>
+                            <MultiBinding Converter="{StaticResource addValueConverter}">
+                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Controls:ParallaxView}}" Path="ActualHeight"/>
+                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Controls:ParallaxView}}" Path="VerticalShift"/>
+                            </MultiBinding>
+                        </ContentPresenter.Height>
+                        <ContentPresenter.Width>
+                            <MultiBinding Converter="{StaticResource addValueConverter}">
+                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Controls:ParallaxView}}" Path="ActualWidth"/>
+                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Controls:ParallaxView}}" Path="HorizontalShift"/>
+                            </MultiBinding>
+                        </ContentPresenter.Width>
+                    </ContentPresenter>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="{x:Type Controls:AcrylicPanel}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:AcrylicPanel}">
+                    <Grid ClipToBounds="True">
+                        <!-- background -->
+                        <Rectangle>
+                            <Rectangle.Fill>
+                                <PriorityBinding>
+                                    <Binding Path="Target.Background" RelativeSource="{RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}" />
+                                    <Binding Path="Target.Fill" RelativeSource="{RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}" />
+                                </PriorityBinding>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <!-- main -->
+                        <Canvas>
+                            <ContentControl>
+                                <ContentControl.CacheMode>
+                                    <BitmapCache RenderAtScale="0.2"/>
+                                </ContentControl.CacheMode>
+                                <Rectangle x:Name="rect"
+                                           IsHitTestVisible="False"
+                                           Width="{Binding Target.ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}}"
+                                           Height="{Binding Target.ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}}"
+                                           ClipToBounds="False">
+                                    <Rectangle.Fill>
+                                        <VisualBrush Stretch="None" AlignmentX="Left" AlignmentY="Top"
+                                                     ViewboxUnits="Absolute"
+                                                     Visual="{Binding Target, RelativeSource={RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}}">
+                                        </VisualBrush>
+                                    </Rectangle.Fill>
+                                    <Rectangle.RenderTransform>
+                                        <MultiBinding Converter="{StaticResource brushTranslationConverter}">
+                                            <Binding Path="Target" RelativeSource="{RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}"/>
+                                            <Binding Path="Source" RelativeSource="{RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}"/>
+                                        </MultiBinding>
+                                    </Rectangle.RenderTransform>
+                                    <Rectangle.Effect>
+                                        <BlurEffect Radius="100"/>
+                                    </Rectangle.Effect>
+                                </Rectangle>
+                            </ContentControl>
+                        </Canvas>
+                        <!-- tint layer -->
+                        <Rectangle Opacity="{Binding TintOpacity, RelativeSource={RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}}">
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="{Binding TintColor, RelativeSource={RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+
+                        <!-- noise layer -->
+                        <Rectangle Opacity="{Binding NoiseOpacity, RelativeSource={RelativeSource AncestorType={x:Type Controls:AcrylicPanel}}}">
+                            <Rectangle.Fill>
+                                <ImageBrush ImageSource="/Design;component/Assets/Images/noise.png"
+                                                TileMode="Tile" Stretch="None"
+                                                ViewportUnits="Absolute" Viewport="0,0,128,128"/>
+                            </Rectangle.Fill>
+                        </Rectangle>
+
+
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>
