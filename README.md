@@ -4,8 +4,6 @@ Extended c# library that include classes and styles to create design for WPF app
 
 ### Preparation
 
-Add XAML namespace.
-
 Add ResourceDictionary to App.xaml.
 
 ```xml
